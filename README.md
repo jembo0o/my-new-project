@@ -1,79 +1,126 @@
-<!-- This is the markdown template for the final project of the Building AI course, 
-created by Reaktor Innovations and University of Helsinki. 
-Copy the template, paste it to your GitHub README and edit! -->
+# SmartSpend — AI Personal Finance Advisor 
 
-# Project Building AI course 
+> *An AI-powered tool that analyzes your daily spending habits and gives personalized advice to help you save money and reach your financial goals.*
 
-Final project for the Building AI course
-
-## Summary
-
-Describe briefly in 2-3 sentences what your project is about. About 250 characters is a nice length! 
-
+---
 
 ## Background
 
-Which problems does your idea solve? How common or frequent is this problem? What is your personal motivation? Why is this topic important or interesting?
+Managing personal finances is a challenge that millions of people face every day. Many people overspend without realizing it, struggle to save, or simply don't know where their money is going each month. Traditional budgeting apps exist, but they require manual effort and don't give intelligent, personalized recommendations.
 
-This is how you make a list, if you need one:
-* problem 1
-* problem 2
-* etc.
+**The problem SmartSpend solves:**
+- People spend money on habits they are not fully aware of
+- It's hard to predict whether you'll reach the end of the month without running out of money
+- Generic financial advice doesn't account for individual spending patterns
 
+This is a common and growing problem — especially among young adults and people living in cities with high costs of living. My motivation for this idea is simple: most people want to save more but don't know where to start. AI can bridge that gap by turning raw transaction data into actionable insight.
 
-## How is it used?
+---
 
-Describe the process of using the solution. In what kind situations is the solution needed (environment, time, etc.)? Who are the users, what kinds of needs should be taken into account?
+## Data and AI Techniques
 
-Images will make your README look nice!
-Once you upload an image to your repository, you can link link to it like this (replace the URL with file path, if you've uploaded an image to Github.)
-![Cat](https://upload.wikimedia.org/wikipedia/commons/5/5e/Sleeping_cat_on_her_back.jpg)
+### Data Sources
+- **Personal bank/card transaction history** — exported as CSV (most banks support this)
+- **Public datasets** — e.g. anonymized personal finance datasets on [Kaggle](https://www.kaggle.com/)
+- **User input** — monthly income, savings goals, fixed expenses
 
-If you need to resize images, you have to use an HTML tag, like this:
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Sleeping_cat_on_her_back.jpg" width="300">
+### AI Techniques
 
-This is how you create code examples:
+| Technique | Purpose |
+|---|---|
+| **Classification** | Automatically categorize transactions (food, transport, entertainment, etc.) |
+| **Regression** | Predict end-of-month balance based on current spending pace |
+| **Clustering** | Group spending patterns to detect unusual or recurring habits |
+| **NLP (optional)** | Parse transaction descriptions to improve categorization accuracy |
+
+### Simple Python Demo
+
+```python
+import pandas as pd
+
+# Load transaction data
+df = pd.read_csv('transactions.csv')
+
+# Simple categorization by keyword
+def categorize(description):
+    description = description.lower()
+    if any(word in description for word in ['restaurant', 'cafe', 'pizza', 'uber eats']):
+        return 'Food & Dining'
+    elif any(word in description for word in ['uber', 'bolt', 'bus', 'train']):
+        return 'Transport'
+    elif any(word in description for word in ['netflix', 'spotify', 'cinema']):
+        return 'Entertainment'
+    else:
+        return 'Other'
+
+df['category'] = df['description'].apply(categorize)
+
+# Summarize spending by category
+summary = df.groupby('category')['amount'].sum().sort_values(ascending=False)
+print(summary)
+
+# Simple prediction: project monthly spending based on first N days
+days_passed = 15
+total_days = 30
+current_spend = df['amount'].sum()
+projected = (current_spend / days_passed) * total_days
+print(f"\nProjected monthly spending: €{projected:.2f}")
 ```
-def main():
-   countries = ['Denmark', 'Finland', 'Iceland', 'Norway', 'Sweden']
-   pop = [5615000, 5439000, 324000, 5080000, 9609000]   # not actually needed in this exercise...
-   fishers = [1891, 2652, 3800, 11611, 1757]
 
-   totPop = sum(pop)
-   totFish = sum(fishers)
+---
 
-   # write your solution here
+## How It Is Used
 
-   for i in range(len(countries)):
-      print("%s %.2f%%" % (countries[i], 100.0))    # current just prints 100%
+**Who uses it:**
+- Individuals who want to understand and improve their spending habits
+- Young adults managing their first salary or student budget
+- Anyone with a financial goal (saving for a trip, a car, an emergency fund)
 
-main()
-```
+**Context:**
+- The user exports their bank transaction history as a CSV file
+- SmartSpend processes it and displays a dashboard with spending breakdown, trends, and predictions
+- The AI provides simple, friendly recommendations: *"You spent 35% more on dining out this month compared to last month."*
 
+**Who is affected:**
+- **Users** benefit directly from better financial awareness
+- **Banks/fintech companies** could integrate this as a value-added feature
+- **Privacy** is an important concern — all data should be processed locally or with strong encryption, and never shared with third parties without consent
 
-## Data sources and AI methods
-Where does your data come from? Do you collect it yourself or do you use data collected by someone else?
-If you need to use links, here's an example:
-[Twitter API](https://developer.twitter.com/en/docs)
-
-| Syntax      | Description |
-| ----------- | ----------- |
-| Header      | Title       |
-| Paragraph   | Text        |
+---
 
 ## Challenges
 
-What does your project _not_ solve? Which limitations and ethical considerations should be taken into account when deploying a solution like this?
+SmartSpend is not a complete financial solution. It has important limitations:
 
-## What next?
+- **Data quality** — transaction descriptions from banks are often cryptic or inconsistent, making automatic categorization imperfect
+- **No real-time data** — the tool works with exported snapshots, not live account feeds
+- **Cultural differences** — spending categories and habits vary widely across countries and demographics
+- **Privacy risks** — financial data is highly sensitive; any real deployment requires strong security measures
+- **No financial advice** — SmartSpend gives observations, not professional financial guidance. It cannot replace a financial advisor
+- **Behavioral change is hard** — knowing you overspend doesn't automatically mean you'll change
 
-How could your project grow and become something even more? What kind of skills, what kind of assistance would you  need to move on? 
+---
 
+## What Next
+
+With more time and resources, SmartSpend could grow into:
+
+-  **A mobile app** with real-time bank API integration (Open Banking / PSD2 in Europe)
+-  **A chatbot interface** — ask questions like *"How much did I spend on food last month?"*
+-  **Goal tracking** — set a savings goal and get weekly progress updates
+-  **Smart alerts** — notify when you're about to exceed a category budget
+-  **Multi-currency support** for people who travel or work internationally
+-  **Peer comparison** — anonymized benchmarks: *"You spend less on transport than 70% of people in your city"*
+
+---
 
 ## Acknowledgments
 
-* list here the sources of inspiration 
-* do not use code, images, data etc. from others without permission
-* when you have permission to use other people's materials, always mention the original creator and the open source / Creative Commons licence they've used
-  <br>For example: [Sleeping Cat on Her Back by Umberto Salvagnin](https://commons.wikimedia.org/wiki/File:Sleeping_cat_on_her_back.jpg#filelinks) / [CC BY 2.0](https://creativecommons.org/licenses/by/2.0)
-* etc
+- Inspiration from the [Elements of AI — Building AI](https://buildingai.elementsofai.com/) course by Reaktor and University of Helsinki
+- Public finance datasets: [Kaggle Personal Finance Datasets](https://www.kaggle.com/search?q=personal+finance)
+- Python libraries: [pandas](https://pandas.pydata.org/), [scikit-learn](https://scikit-learn.org/), [matplotlib](https://matplotlib.org/)
+- Open Banking standard: [PSD2 / Open Banking EU](https://www.openbanking.org.uk/)
+
+---
+
+*This project was created as part of the Building AI course final project.*
